@@ -135,9 +135,10 @@ class Container:
                     "mode": "ro,delegated",
                 }
             }
+        container_name = self._env_vars['AWS_LAMBDA_FUNCTION_NAME']
 
         kwargs = {
-            "name": self._env_vars['AWS_LAMBDA_FUNCTION_NAME'],
+            "name": container_name,
             "command": self._cmd,
             "working_dir": self._working_dir,
             "volumes": _volumes,
@@ -180,7 +181,7 @@ class Container:
             kwargs["network_mode"] = self.network_id
 
         try:
-            self.docker_client.containers.get(self._env_vars['AWS_LAMBDA_FUNCTION_NAME']).remove(force=True)
+            self.docker_client.containers.get(container_name).remove(force=True)
         except docker.errors.NotFound:
             LOG.debug('running container not exists')
         except docker.errors.APIError as e:
