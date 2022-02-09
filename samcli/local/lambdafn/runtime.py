@@ -497,10 +497,6 @@ class WarmLambdaRuntime(LambdaRuntime):
                 self._container_manager.stop(container)
                 self._containers.pop(function_full_path, None)
 
-    def __del__(self):
-        for container in self._containers:
-            self._container_manager.delete(container)
-
 
 def _unzip_file(filepath):
     """

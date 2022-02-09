@@ -270,8 +270,6 @@ class Container:
 
         if input_data:
             raise ValueError("Passing input through container's stdin is not supported")
-        if self.is_running():
-            return
 
         if not self.is_created():
             raise RuntimeError("Container does not exist. Cannot start this container")
