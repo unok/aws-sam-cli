@@ -44,6 +44,7 @@ class LambdaRuntime:
         self._container_manager = container_manager
         self._image_builder = image_builder
         self._temp_uncompressed_paths_to_be_cleaned = []
+        self._containers = {}
 
     def create(self, function_config, debug_context=None, container_host=None, container_host_interface=None):
         """
@@ -70,6 +71,8 @@ class LambdaRuntime:
 
         code_dir = self._get_code_dir(function_config.code_abs_path)
         layers = [self._unarchived_layer(layer) for layer in function_config.layers]
+        if (function_config.handler in self._containers):
+            return self._containers[function_config.handler]
         container = LambdaContainer(
             function_config.runtime,
             function_config.imageuri,
@@ -90,6 +93,7 @@ class LambdaRuntime:
         try:
             # create the container.
             self._container_manager.create(container)
+            self._containers[function_config.handler] = container
             return container
 
         except KeyboardInterrupt:
@@ -493,6 +497,10 @@ class WarmLambdaRuntime(LambdaRuntime):
                 self._container_manager.stop(container)
                 self._containers.pop(function_full_path, None)
 
+    def __del__(self):
+        for container in self._containers:
+            self._container_manager.delete(container)
+
 
 def _unzip_file(filepath):
     """
@@ -530,3 +538,4 @@ def _require_container_reloading(exist_function_config, function_config):
         or sorted(exist_function_config.layers, key=lambda x: x.full_path)
         != sorted(function_config.layers, key=lambda x: x.full_path)
     )
+

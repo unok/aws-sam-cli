@@ -124,7 +124,7 @@ class ContainerManager:
         """
         if self.do_shutdown_event:
             container.stop()
-        container.delete()
+#        container.delete()
 
     def pull_image(self, image_name, tag=None, stream=None):
         """
