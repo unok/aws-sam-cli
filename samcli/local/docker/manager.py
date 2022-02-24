@@ -122,9 +122,10 @@ class ContainerManager:
 
         :param samcli.local.docker.container.Container container: Container to stop
         """
-        if self.do_shutdown_event:
-            container.stop()
+#        if self.do_shutdown_event:
+#            container.stop()
 #        container.delete()
+        container.stop(0)
 
     def pull_image(self, image_name, tag=None, stream=None):
         """
