@@ -76,6 +76,7 @@ class LocalLambdaRunner:
         self._boto3_region: Optional[str] = None
         self.container_host = container_host
         self.container_host_interface = container_host_interface
+        self._configs = {}
 
     def invoke(
         self,
@@ -130,7 +131,10 @@ class LocalLambdaRunner:
 
         validate_architecture_runtime(function)
 
-        config = self.get_invoke_config(function)
+        if not (function_identifier in self._configs):
+            self._configs[function_identifier] = self.get_invoke_config(function)
+
+        config = self._configs.get(function_identifier)
 
         # Invoke the function
         try:
